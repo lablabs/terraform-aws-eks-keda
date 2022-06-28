@@ -2,17 +2,12 @@
 
 [![labyrinth labs logo](ll-logo.png)](https://lablabs.io/)
 
-We help companies build, run, deploy and scale software and infrastructure by embracing the right technologies and principles. Check out our website at https://lablabs.io/
+We help companies build, run, deploy and scale software and infrastructure by embracing the right technologies and principles. Check out our website at <https://lablabs.io/>
 
 ---
 
-<<<<<<< Updated upstream
-![Terraform validation](https://github.com/lablabs/terraform-aws-eks-load-balancer-controller/workflows/Terraform%20validation/badge.svg?branch=main)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-success?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-=======
 [![Terraform validate](https://github.com/lablabs/terraform-aws-eks-keda/actions/workflows/validate.yaml/badge.svg)](https://github.com/lablabs/terraform-aws-eks-keda/actions/workflows/validate.yaml)
 [![pre-commit](https://github.com/lablabs/terraform-aws-eks-keda/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/lablabs/terraform-aws-eks-keda/actions/workflows/pre-commit.yml)
->>>>>>> Stashed changes
 
 ## Description
 
@@ -20,7 +15,7 @@ A terraform module to deploy the AWS keda on Amazon EKS cluster.
 
 ## Related Projects
 
-Check out these [related projects](https://github.com/orgs/lablabs/repositories?q=terraform-aws-eks&type=public&language=&sort=).
+Check out other [terraform kubernetes addons](https://github.com/orgs/lablabs/repositories?q=terraform-aws-eks&type=public&language=&sort=).
 
 ## Deployment methods
 
