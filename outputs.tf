@@ -12,3 +12,8 @@ output "kubernetes_application_attributes" {
   description = "Argo kubernetes manifest attributes"
   value       = try(kubernetes_manifest.this[0], {})
 }
+
+output "iam_role_attributes" {
+  description = "IAM role atributes"
+  value       = try(aws_iam_role.this[0], {})
+}
