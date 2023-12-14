@@ -20,6 +20,16 @@ locals {
       "server" : var.argo_destination_server
       "namespace" : var.namespace
     }
+    # Temporary workaround for https://github.com/kedacore/charts/pull/564
+    "ignoreDifferences" = [
+      {
+        "group" = "apiregistration.k8s.io"
+        "kind"  = "APIService"
+        "jqPathExpressions" = [
+          ".spec.insecureSkipTLSVerify"
+        ]
+      }
+    ]
     "syncPolicy" : var.argo_sync_policy
     "info" : var.argo_info
   }
