@@ -1,36 +1,79 @@
 locals {
-  irsa_role_create               = var.enabled && var.service_account_create && var.irsa_role_create
-  irsa_policy_allow_assume_roles = length(var.irsa_policy_allow_assume_roles) > 0 ? var.irsa_policy_allow_assume_roles : ["arn:aws:iam::${data.aws_caller_identity.this.id}:role/*"]
+  irsa_role_create      = var.enabled == true && var.rbac_create == true
+  irsa_role_name_prefix = try(coalesce(var.irsa_role_name_prefix, var.helm_release_name), "")
+  irsa_role_name        = try(trim("${local.irsa_role_name_prefix}-${var.helm_chart_name}", "-"), "")
+
+  irsa_components = {
+    operator = {
+      irsa_role_create         = local.irsa_role_create && var.keda_operator_service_account_create == true && var.keda_operator_irsa_role_create == true
+      irsa_role_name_prefix    = "${local.irsa_role_name_prefix}-operator"
+      irsa_role_name           = "${local.irsa_role_name}-operator"
+      irsa_policy_enabled      = var.keda_operator_irsa_policy_enabled == true && try(length(var.keda_operator_irsa_policy) > 0, false)
+      irsa_policy              = var.keda_operator_irsa_policy
+      irsa_assume_role_enabled = var.keda_operator_irsa_assume_role_enabled == true && try(length(var.keda_operator_irsa_assume_role_arns) > 0, false)
+      irsa_assume_role_arns    = var.keda_operator_irsa_assume_role_arns
+      irsa_additional_policies = var.keda_operator_irsa_additional_policies
+      service_account_name     = var.keda_operator_service_account_name
+    }
+    metricServer = {
+      irsa_role_create         = local.irsa_role_create && var.keda_metric_server_service_account_create == true && var.keda_metric_server_irsa_role_create == true
+      irsa_role_name_prefix    = "${local.irsa_role_name_prefix}-metrics-server"
+      irsa_role_name           = "${local.irsa_role_name}-metrics-server"
+      irsa_policy_enabled      = var.keda_metric_server_irsa_policy_enabled == true && try(length(var.keda_metric_server_irsa_policy) > 0, false)
+      irsa_policy              = var.keda_metric_server_irsa_policy
+      irsa_assume_role_enabled = var.keda_metric_server_irsa_assume_role_enabled == true && try(length(var.keda_metric_server_irsa_assume_role_arns) > 0, false)
+      irsa_assume_role_arns    = var.keda_metric_server_irsa_assume_role_arns
+      irsa_additional_policies = var.keda_metric_server_irsa_additional_policies
+      service_account_name     = var.keda_metric_server_service_account_name
+    }
+    webhooks = {
+      irsa_role_create         = local.irsa_role_create && var.keda_webhooks_service_account_create == true && var.keda_webhooks_irsa_role_create == true
+      irsa_role_name_prefix    = "${local.irsa_role_name_prefix}-webhooks"
+      irsa_role_name           = "${local.irsa_role_name}-webhooks"
+      irsa_policy_enabled      = var.keda_webhooks_irsa_policy_enabled == true && try(length(var.keda_webhooks_irsa_policy) > 0, false)
+      irsa_policy              = var.keda_webhooks_irsa_policy
+      irsa_assume_role_enabled = var.keda_webhooks_irsa_assume_role_enabled == true && try(length(var.keda_webhooks_irsa_assume_role_arns) > 0, false)
+      irsa_assume_role_arns    = var.keda_webhooks_irsa_assume_role_arns
+      irsa_additional_policies = var.keda_webhooks_irsa_additional_policies
+      service_account_name     = var.keda_webhooks_service_account_name
+    }
+  }
 }
 
-data "aws_caller_identity" "this" {}
-
-data "aws_iam_policy_document" "this" {
-  count = local.irsa_role_create && var.irsa_policy_enabled ? 1 : 0
+data "aws_iam_policy_document" "this_assume" {
+  for_each = {
+    for k, v in local.irsa_components : k => v if v.irsa_role_create && v.irsa_assume_role_enabled
+  }
 
   statement {
     effect = "Allow"
     actions = [
       "sts:AssumeRole"
     ]
-    resources = local.irsa_policy_allow_assume_roles
+    resources = each.value.irsa_assume_role_arns
   }
 }
 
 resource "aws_iam_policy" "this" {
-  count       = local.irsa_role_create && var.irsa_policy_enabled ? 1 : 0
-  name        = "${var.irsa_role_name_prefix}-${var.helm_release_name}"
-  path        = "/"
-  description = "Policy for keda service"
+  for_each = {
+    for k, v in local.irsa_components : k => v if v.irsa_role_create && (v.irsa_policy_enabled || v.irsa_assume_role_enabled)
+  }
 
-  policy = data.aws_iam_policy_document.this[0].json
-  tags   = var.irsa_tags
+  name        = each.value.irsa_role_name # tflint-ignore: aws_iam_policy_invalid_name
+  path        = "/"
+  description = "Policy for ${var.helm_release_name} ${each.key} component"
+  policy      = each.value.irsa_assume_role_enabled ? data.aws_iam_policy_document.this_assume[each.key].json : each.value.irsa_policy
+
+  tags = var.irsa_tags
 }
 
-data "aws_iam_policy_document" "this_assume" {
-  count = local.irsa_role_create ? 1 : 0
+data "aws_iam_policy_document" "this_irsa" {
+  for_each = {
+    for k, v in local.irsa_components : k => v if v.irsa_role_create
+  }
 
   statement {
+    effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
     principals {
@@ -43,33 +86,36 @@ data "aws_iam_policy_document" "this_assume" {
       variable = "${replace(var.cluster_identity_oidc_issuer, "https://", "")}:sub"
 
       values = [
-        "system:serviceaccount:${var.namespace}:${var.service_account_name}",
+        "system:serviceaccount:${var.namespace}:${each.value.service_account_name}",
       ]
     }
-
-    effect = "Allow"
   }
 }
 
 resource "aws_iam_role" "this" {
-  count = local.irsa_role_create ? 1 : 0
+  for_each = {
+    for k, v in local.irsa_components : k => v if v.irsa_role_create
+  }
 
-  name               = "${var.irsa_role_name_prefix}-${var.helm_release_name}"
-  assume_role_policy = data.aws_iam_policy_document.this_assume[0].json
-
-  tags = var.irsa_tags
+  name               = each.value.irsa_role_name # tflint-ignore: aws_iam_role_invalid_name
+  assume_role_policy = data.aws_iam_policy_document.this_irsa[each.key].json
+  tags               = var.irsa_tags
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
-  count = local.irsa_role_create ? 1 : 0
+  for_each = {
+    for k, v in local.irsa_components : k => v if v.irsa_role_create && (v.irsa_policy_enabled || v.irsa_assume_role_enabled)
+  }
 
-  role       = aws_iam_role.this[0].name
-  policy_arn = aws_iam_policy.this[0].arn
+  role       = aws_iam_role.this[each.key].name
+  policy_arn = aws_iam_policy.this[each.key].arn
 }
 
-resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = local.irsa_role_create ? var.irsa_additional_policies : {}
+resource "aws_iam_role_policy_attachment" "this_additional" {
+  for_each = merge([
+    for k, v in local.irsa_components : { k = v.irsa_additional_policies } if v.irsa_role_create
+  ]...)
 
-  role       = aws_iam_role.this[0].name
+  role       = aws_iam_role.this[each.value].name
   policy_arn = each.value
 }
