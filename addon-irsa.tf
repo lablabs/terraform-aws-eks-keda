@@ -2,7 +2,7 @@
 module "addon-irsa" {
   for_each = local.addon_irsa
 
-  source = "git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon-irsa?ref=v0.0.3"
+  source = "git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon-irsa?ref=v0.0.4"
 
   enabled = var.enabled
 
@@ -21,9 +21,8 @@ module "addon-irsa" {
   irsa_assume_role_arns    = var.irsa_assume_role_arns != null ? var.irsa_assume_role_arns : try(each.value.irsa_assume_role_arns, "")
   irsa_assume_role_enabled = var.irsa_assume_role_enabled != null ? var.irsa_assume_role_enabled : try(each.value.irsa_assume_role_enabled, false)
 
-  irsa_policy_enabled = var.irsa_policy_enabled != null ? var.irsa_policy_enabled : try(each.value.irsa_policy_enabled, false)
-  irsa_policy         = var.irsa_policy != null ? var.irsa_policy : try(each.value.irsa_policy, "")
+  irsa_permissions_boundary = var.irsa_permissions_boundary != null ? var.irsa_permissions_boundary : try(each.value.irsa_permissions_boundary, null)
+  irsa_additional_policies  = var.irsa_additional_policies != null ? var.irsa_additional_policies : try(each.value.irsa_additional_policies, tomap({}))
 
-  irsa_additional_policies = var.irsa_additional_policies != null ? var.irsa_additional_policies : try(each.value.irsa_additional_policies, tomap({}))
-  irsa_tags                = var.irsa_tags != null ? var.irsa_tags : try(each.value.irsa_tags, tomap({}))
+  irsa_tags = var.irsa_tags != null ? var.irsa_tags : try(each.value.irsa_tags, tomap({}))
 }

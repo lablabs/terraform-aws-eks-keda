@@ -59,21 +59,21 @@ locals {
       operator = {
         create = var.keda_operator_service_account_create
         name   = var.keda_operator_service_account_name
-        annotations = length(module.addon-irsa["operator"].iam_role_attributes) > 0 ? {
+        annotations = module.addon-irsa["operator"].irsa_role_enabled ? {
           "eks.amazonaws.com/role-arn" = module.addon-irsa["operator"].iam_role_attributes.arn
         } : tomap({})
       }
       metricServer = {
         create = var.keda_metric_server_service_account_create
         name   = var.keda_metric_server_service_account_name
-        annotations = length(module.addon-irsa["metricServer"].iam_role_attributes) > 0 ? {
+        annotations = module.addon-irsa["metricServer"].irsa_role_enabled ? {
           "eks.amazonaws.com/role-arn" = module.addon-irsa["metricServer"].iam_role_attributes.arn
         } : tomap({})
       }
       webhooks = {
         create = var.keda_webhooks_service_account_create
         name   = var.keda_webhooks_service_account_name
-        annotations = length(module.addon-irsa["webhooks"].iam_role_attributes) > 0 ? {
+        annotations = module.addon-irsa["webhooks"].irsa_role_enabled ? {
           "eks.amazonaws.com/role-arn" = module.addon-irsa["webhooks"].iam_role_attributes.arn
         } : tomap({})
       }
