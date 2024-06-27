@@ -1,0 +1,34 @@
+formatter: markdown table
+
+header-from: main.tf
+footer-from: docs/.footer.md
+
+content: |-
+  {{ .Header }}
+  {{ include "docs/.addon.md" }}
+  {{ .Requirements }}
+  {{ .Providers }}
+  {{ .Modules }}
+  {{ .Resources }}
+  {{ include "docs/.inputs.md" }}
+  {{ .Inputs }}
+  {{ .Outputs }}
+  {{ .Footer }}
+
+output:
+  file: README.md
+  mode: replace
+  template: |-
+    {{ .Content }}
+    {{- printf "\n" -}}
+
+sections:
+  hide:
+    - providers
+
+sort:
+  by: required
+
+settings:
+  default: false
+  required: false
