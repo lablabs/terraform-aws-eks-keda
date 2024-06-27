@@ -47,6 +47,12 @@ variable "keda_operator_irsa_assume_role_arns" {
   description = "Assume role ARNs for the KEDA operator. Applied only if `keda_operator_irsa_assume_role_enabled` is `true`."
 }
 
+variable "keda_operator_irsa_permissions_boundary" {
+  type        = string
+  default     = null
+  description = "ARN of the policy that is used to set the permissions boundary for the IRSA role of the KEDA operator. Defaults to `\"\"`."
+}
+
 variable "keda_operator_irsa_additional_policies" {
   type        = map(string)
   default     = {}
@@ -95,6 +101,12 @@ variable "keda_metric_server_irsa_assume_role_arns" {
   description = "Assume role ARNs for the KEDA metrics server. Applied only if `keda_metric_server_irsa_assume_role_enabled` is `true`."
 }
 
+variable "keda_metric_server_irsa_permissions_boundary" {
+  type        = string
+  default     = null
+  description = "ARN of the policy that is used to set the permissions boundary for the IRSA role of the KEDA metrics server. Defaults to `\"\"`."
+}
+
 variable "keda_metric_server_irsa_additional_policies" {
   type        = map(string)
   default     = {}
@@ -141,6 +153,12 @@ variable "keda_webhooks_irsa_assume_role_arns" {
   type        = list(string)
   default     = []
   description = "Assume role ARNs for the KEDA webhooks. Applied only if `keda_webhooks_irsa_assume_role_enabled` is `true`."
+}
+
+variable "keda_webhooks_irsa_permissions_boundary" {
+  type        = string
+  default     = null
+  description = "ARN of the policy that is used to set the permissions boundary for the IRSA role of the KEDA webhooks. Defaults to `\"\"`."
 }
 
 variable "keda_webhooks_irsa_additional_policies" {

@@ -20,34 +20,37 @@ locals {
       service_account_create = var.keda_operator_service_account_create
       service_account_name   = var.keda_operator_service_account_name
 
-      irsa_role_create         = var.keda_operator_irsa_role_create
-      irsa_policy_enabled      = var.keda_operator_irsa_policy_enabled
-      irsa_policy              = var.keda_operator_irsa_policy
-      irsa_assume_role_enabled = var.keda_operator_irsa_assume_role_enabled
-      irsa_assume_role_arns    = var.keda_operator_irsa_assume_role_arns
-      irsa_additional_policies = var.keda_operator_irsa_additional_policies
+      irsa_role_create          = var.keda_operator_irsa_role_create
+      irsa_policy_enabled       = var.keda_operator_irsa_policy_enabled
+      irsa_policy               = var.keda_operator_irsa_policy
+      irsa_assume_role_enabled  = var.keda_operator_irsa_assume_role_enabled
+      irsa_assume_role_arns     = var.keda_operator_irsa_assume_role_arns
+      irsa_permissions_boundary = var.keda_operator_irsa_permissions_boundary
+      irsa_additional_policies  = var.keda_operator_irsa_additional_policies
     }
     metricServer = {
       service_account_create = var.keda_metric_server_service_account_create
       service_account_name   = var.keda_metric_server_service_account_name
 
-      irsa_role_create         = var.keda_metric_server_irsa_role_create
-      irsa_policy_enabled      = var.keda_metric_server_irsa_policy_enabled
-      irsa_policy              = var.keda_metric_server_irsa_policy
-      irsa_assume_role_enabled = var.keda_metric_server_irsa_assume_role_enabled
-      irsa_assume_role_arns    = var.keda_metric_server_irsa_assume_role_arns
-      irsa_additional_policies = var.keda_metric_server_irsa_additional_policies
+      irsa_role_create          = var.keda_metric_server_irsa_role_create
+      irsa_policy_enabled       = var.keda_metric_server_irsa_policy_enabled
+      irsa_policy               = var.keda_metric_server_irsa_policy
+      irsa_assume_role_enabled  = var.keda_metric_server_irsa_assume_role_enabled
+      irsa_assume_role_arns     = var.keda_metric_server_irsa_assume_role_arns
+      irsa_permissions_boundary = var.keda_metric_server_irsa_permissions_boundary
+      irsa_additional_policies  = var.keda_metric_server_irsa_additional_policies
     }
     webhooks = {
       service_account_create = var.keda_webhooks_service_account_create
       service_account_name   = var.keda_webhooks_service_account_name
 
-      irsa_role_create         = var.keda_webhooks_irsa_role_create
-      irsa_policy_enabled      = var.keda_webhooks_irsa_policy_enabled
-      irsa_policy              = var.keda_webhooks_irsa_policy
-      irsa_assume_role_enabled = var.keda_webhooks_irsa_assume_role_enabled
-      irsa_assume_role_arns    = var.keda_webhooks_irsa_assume_role_arns
-      irsa_additional_policies = var.keda_webhooks_irsa_additional_policies
+      irsa_role_create          = var.keda_webhooks_irsa_role_create
+      irsa_policy_enabled       = var.keda_webhooks_irsa_policy_enabled
+      irsa_policy               = var.keda_webhooks_irsa_policy
+      irsa_assume_role_enabled  = var.keda_webhooks_irsa_assume_role_enabled
+      irsa_assume_role_arns     = var.keda_webhooks_irsa_assume_role_arns
+      irsa_permissions_boundary = var.keda_webhooks_irsa_permissions_boundary
+      irsa_additional_policies  = var.keda_webhooks_irsa_additional_policies
     }
   }
 
