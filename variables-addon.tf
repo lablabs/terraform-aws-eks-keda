@@ -35,7 +35,7 @@ variable "helm_create_namespace" {
 variable "namespace" {
   type        = string
   default     = null
-  description = "The Kubernetes Namespace in which the Helm chart will be installed. Defaults to `local.addon.name` (required)."
+  description = "The Kubernetes Namespace in which the Helm chart will be installed. Defaults to `local.addon.name`."
 }
 
 variable "settings" {
