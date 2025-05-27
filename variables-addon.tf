@@ -1,79 +1,87 @@
 # IMPORTANT: This file is synced with the "terraform-aws-eks-universal-addon" module. Any changes to this file might be overwritten upon the next release of that module.
 
-# ================ common variables (required) ================
+variable "helm_enabled" {
+  type        = bool
+  default     = null
+  description = "Set to false to prevent installation of the module via Helm release. Defaults to `true`."
+}
 
 variable "helm_chart_name" {
   type        = string
   default     = null
-  description = "Helm chart name to be installed. Defaults to `local.addon.name` (required)."
+  description = "Helm chart name to be installed. Required if `argo_source_type` is set to `helm`. Defaults to `\"\"`."
 }
 
 variable "helm_chart_version" {
   type        = string
   default     = null
-  description = "Version of the Helm chart. Defaults to `local.addon.helm_chart_version` (required)."
+  description = "Version of the Helm chart. Required if `argo_source_type` is set to `helm`. Defaults to `\"\"`."
 }
 
 variable "helm_release_name" {
   type        = string
   default     = null
-  description = "Helm release name. Defaults to `local.addon.name` (required)."
+  description = "Helm release name. Required if `argo_source_type` is set to `helm`. Defaults to `\"\"`."
 }
 
 variable "helm_repo_url" {
   type        = string
   default     = null
-  description = "Helm repository. Defaults to `local.addon.helm_repo_url` (required)."
+  description = "Helm repository. Required if `argo_source_type` is set to `helm`. Defaults to `\"\"`."
 }
 
 variable "helm_create_namespace" {
   type        = bool
   default     = null
-  description = "Create the namespace if it does not yet exist. Defaults to `true`."
+  description = "Create the Namespace if it does not yet exist. Defaults to `true`."
 }
 
 variable "namespace" {
   type        = string
   default     = null
-  description = "The Kubernetes Namespace in which the Helm chart will be installed. Defaults to `local.addon.name` (required)."
+  description = "The Kubernetes Namespace in which the Helm chart will be installed (required)."
 }
 
 variable "settings" {
   type        = map(any)
   default     = null
-  description = "Additional Helm sets which will be passed to the Helm chart values. Defaults to `{}`."
+  description = "Additional Helm sets which will be passed to the Helm chart values or Kustomize or directory configuration which will be passed to ArgoCD Application source. Defaults to `{}`."
 }
 
 variable "values" {
   type        = string
   default     = null
-  description = "Additional yaml encoded values which will be passed to the Helm chart. Defaults to `\"\"`."
+  description = "Additional YAML encoded values which will be passed to the Helm chart. Defaults to `\"\"`."
 }
 
-# ================ argo variables (required) ================
+variable "argo_name" {
+  type        = string
+  default     = null
+  description = "Name of the ArgoCD Application. Required if `argo_source_type` is set to `kustomize` or `directory`.  If `argo_source_type` is set to `helm`, ArgoCD Application name will equal `helm_release_name`. Defaults to `\"\"`."
+}
 
 variable "argo_namespace" {
   type        = string
   default     = null
-  description = "Namespace to deploy ArgoCD application CRD to. Defaults to `\"argo\"`."
+  description = "Namespace to deploy ArgoCD Application to. Defaults to `argo`."
 }
 
 variable "argo_enabled" {
   type        = bool
   default     = null
-  description = "If set to true, the module will be deployed as ArgoCD application, otherwise it will be deployed as a Helm release. Defaults to `false`."
+  description = "If set to `true`, the module will be deployed as ArgoCD Application, otherwise it will be deployed as a Helm release. Defaults to `false`."
 }
 
 variable "argo_helm_enabled" {
   type        = bool
   default     = null
-  description = "If set to true, the ArgoCD Application manifest will be deployed using Kubernetes provider as a Helm release. Otherwise it'll be deployed as a Kubernetes manifest. See README for more info. Defaults to `false`."
+  description = "If set to `true`, the ArgoCD Application manifest will be deployed using Kubernetes provider as a Helm release. Otherwise it'll be deployed as a Kubernetes manifest. See README for more info. Defaults to `false`."
 }
 
 variable "argo_helm_wait_timeout" {
   type        = string
   default     = null
-  description = "Timeout for ArgoCD Application Helm release wait job. Defaults to `\"10m\"`."
+  description = "Timeout for ArgoCD Application Helm release wait job. Defaults to `10m`."
 }
 
 variable "argo_helm_wait_node_selector" {
@@ -94,10 +102,40 @@ variable "argo_helm_wait_backoff_limit" {
   description = "Backoff limit for ArgoCD Application Helm release wait job. Defaults to `6`."
 }
 
+variable "argo_helm_wait_kubectl_version" {
+  type        = string
+  default     = null
+  description = "Version of kubectl to use for ArgoCD Application wait job. Defaults to `1.33.0`."
+}
+
+variable "argo_source_type" {
+  type        = string
+  default     = null
+  description = "Source type for ArgoCD Application. Can be either `helm`, `kustomize`, or `directory`. Defaults to `helm`."
+}
+
+variable "argo_source_repo_url" {
+  type        = string
+  default     = null
+  description = "ArgoCD Application source repo URL. Required if `argo_source_type` is set to `kustomize` or `directory`. Defaults to `\"\"`."
+}
+
+variable "argo_source_target_revision" {
+  type        = string
+  default     = null
+  description = "ArgoCD Application source target revision. Required if `argo_source_type` is set to `kustomize` or `directory`. Defaults to `\"\"`."
+}
+
+variable "argo_source_path" {
+  type        = string
+  default     = null
+  description = "ArgoCD Application source path. Required if `argo_source_type` is set to `kustomize` or `directory`. Defaults to `\"\"`."
+}
+
 variable "argo_destination_server" {
   type        = string
   default     = null
-  description = "Destination server for ArgoCD Application. Defaults to `\"https://kubernetes.default.svc\"`."
+  description = "Destination server for ArgoCD Application. Defaults to `https://kubernetes.default.svc`."
 }
 
 variable "argo_project" {
@@ -107,36 +145,45 @@ variable "argo_project" {
 }
 
 variable "argo_info" {
-  type = list(object({
-    name  = string
-    value = string
-  }))
+  type        = list(any)
   default     = null
-  description = "ArgoCD info manifest parameter. Defaults to `[{name=\"terraform\",value=true}]`."
+  description = "ArgoCD Application manifest info parameter. Defaults to `[{\"name\": \"terraform\", \"value\": \"true\"}]`."
 }
 
 variable "argo_sync_policy" {
   type        = any
   default     = null
-  description = "ArgoCD syncPolicy manifest parameter. Defaults to `{}`."
+  description = "ArgoCD Application manifest syncPolicy parameter. Defaults to `{}`."
 }
 
 variable "argo_metadata" {
   type        = any
   default     = null
-  description = "ArgoCD Application metadata configuration. Override or create additional metadata parameters. Defaults to `{finalizers=[\"resources-finalizer.argocd.argoproj.io\"]}`."
+  description = "ArgoCD Application metadata configuration. Override or create additional metadata parameters. Defaults to `{\"finalizers\": [\"resources-finalizer.argocd.argoproj.io\"]}`."
 }
 
 variable "argo_apiversion" {
   type        = string
   default     = null
-  description = "ArgoCD Application apiVersion. Defaults to `\"argoproj.io/v1alpha1\"`."
+  description = "ArgoCD Application apiVersion. Defaults to `argoproj.io/v1alpha1`."
 }
 
 variable "argo_spec" {
   type        = any
   default     = null
-  description = "ArgoCD Application spec configuration. Override or create additional spec parameters. Defaults to `{}`."
+  description = "ArgoCD Application spec configuration. Configuration is extended by deep merging with the default spec parameters. Defaults to `{}`."
+}
+
+variable "argo_spec_override" {
+  type        = any
+  default     = null
+  description = "ArgoCD Application spec configuration. Configuration is overriden by merging natively with the default spec parameters. Defaults to `{}`."
+}
+
+variable "argo_operation" {
+  type        = any
+  default     = null
+  description = "ArgoCD Application manifest operation parameter. Defaults to `{}`."
 }
 
 variable "argo_helm_values" {
@@ -144,8 +191,6 @@ variable "argo_helm_values" {
   default     = null
   description = "Value overrides to use when deploying ArgoCD Application object with Helm. Defaults to `\"\"`."
 }
-
-# ================ argo kubernetes manifest variables (required) ================
 
 variable "argo_kubernetes_manifest_computed_fields" {
   type        = list(string)
@@ -156,7 +201,7 @@ variable "argo_kubernetes_manifest_computed_fields" {
 variable "argo_kubernetes_manifest_field_manager_name" {
   type        = string
   default     = null
-  description = "The name of the field manager to use when applying the Kubernetes manifest resource. Defaults to `\"Terraform\"`."
+  description = "The name of the field manager to use when applying the Kubernetes manifest resource. Defaults to `Terraform`."
 }
 
 variable "argo_kubernetes_manifest_field_manager_force_conflicts" {
@@ -170,8 +215,6 @@ variable "argo_kubernetes_manifest_wait_fields" {
   default     = null
   description = "A map of fields and a corresponding regular expression with a pattern to wait for. The provider will wait until the field matches the regular expression. Use * for any value. Defaults to `{}`."
 }
-
-# ================ Helm release variables (required) ================
 
 variable "helm_repo_key_file" {
   type        = string
@@ -218,7 +261,7 @@ variable "helm_package_verify" {
 variable "helm_keyring" {
   type        = string
   default     = null
-  description = "Location of public keys used for verification. Used only if `helm_package_verify` is `true`. Defaults to `\"~/.gnupg/pubring.gpg\"`."
+  description = "Location of public keys used for verification. Used only if `helm_package_verify` is `true`. Defaults to `~/.gnupg/pubring.gpg`."
 }
 
 variable "helm_timeout" {
@@ -242,7 +285,7 @@ variable "helm_reset_values" {
 variable "helm_reuse_values" {
   type        = bool
   default     = null
-  description = "When upgrading, reuse the last Helm release's values and merge in any overrides. If 'helm_reset_values' is specified, this is ignored. Defaults to `false`."
+  description = "When upgrading, reuse the last Helm release's values and merge in any overrides. If `helm_reset_values` is specified, this is ignored. Defaults to `false`."
 }
 
 variable "helm_force_update" {

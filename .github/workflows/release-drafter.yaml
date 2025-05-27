@@ -1,9 +1,5 @@
 name: Release drafter
 
-permissions:
-  contents: write
-  pull-requests: read
-
 on:
   push:
     branches:
@@ -11,13 +7,21 @@ on:
       - master
 
   pull_request:
-    types: [opened, reopened, synchronize, labeled]
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+
+permissions:
+  contents: write
+  pull-requests: read
 
 jobs:
-  update_release_draft:
-    runs-on: ubuntu-22.04
+  release-drafter:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@b1476f6e6eb133afa41ed8589daba6dc69b4d3f5 # v6.1.0
         with:
           config-name: RELEASE_DRAFTER.yml
         env:
