@@ -21,6 +21,7 @@ locals {
       service_account_name   = var.operator_service_account_name
 
       irsa_role_create          = var.operator_irsa_role_create
+      irsa_role_name            = var.operator_irsa_role_name
       irsa_policy_enabled       = var.operator_irsa_policy_enabled
       irsa_policy               = var.operator_irsa_policy
       irsa_assume_role_enabled  = var.operator_irsa_assume_role_enabled
@@ -33,6 +34,7 @@ locals {
       service_account_name   = var.metric_server_service_account_name
 
       irsa_role_create          = var.metric_server_irsa_role_create
+      irsa_role_name            = var.metric_server_irsa_role_name
       irsa_policy_enabled       = var.metric_server_irsa_policy_enabled
       irsa_policy               = var.metric_server_irsa_policy
       irsa_assume_role_enabled  = var.metric_server_irsa_assume_role_enabled
@@ -45,6 +47,7 @@ locals {
       service_account_name   = var.webhooks_service_account_name
 
       irsa_role_create          = var.webhooks_irsa_role_create
+      irsa_role_name            = var.webhooks_irsa_role_name
       irsa_policy_enabled       = var.webhooks_irsa_policy_enabled
       irsa_policy               = var.webhooks_irsa_policy
       irsa_assume_role_enabled  = var.webhooks_irsa_assume_role_enabled

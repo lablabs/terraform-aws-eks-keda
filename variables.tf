@@ -23,6 +23,12 @@ variable "operator_irsa_role_create" {
   description = "Whether to create the IRSA role for the KEDA operator."
 }
 
+variable "operator_irsa_role_name" {
+  type        = string
+  default     = "keda-operator"
+  description = "The name of the IRSA role for the KEDA operator."
+}
+
 variable "operator_irsa_policy_enabled" {
   type        = bool
   default     = false
@@ -77,6 +83,12 @@ variable "metric_server_irsa_role_create" {
   description = "Whether to create the IRSA role for the KEDA metrics server."
 }
 
+variable "metric_server_irsa_role_name" {
+  type        = string
+  default     = "keda-metrics-server"
+  description = "The name of the IRSA role for the KEDA metrics server."
+}
+
 variable "metric_server_irsa_policy_enabled" {
   type        = bool
   default     = false
@@ -129,6 +141,12 @@ variable "webhooks_irsa_role_create" {
   type        = bool
   default     = false
   description = "Whether to create the IRSA role for the KEDA webhooks."
+}
+
+variable "webhooks_irsa_role_name" {
+  type        = string
+  default     = "keda-webhook"
+  description = "The name of the IRSA role for the KEDA webhooks."
 }
 
 variable "webhooks_irsa_policy_enabled" {

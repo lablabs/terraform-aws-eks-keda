@@ -51,7 +51,7 @@ See [basic example](examples/basic) for further information.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_addon"></a> [addon](#module\_addon) | git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon | v0.0.18 |
-| <a name="module_addon-irsa"></a> [addon-irsa](#module\_addon-irsa) | git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon-irsa | v0.0.18 |
+| <a name="module_addon-irsa"></a> [addon-irsa](#module\_addon-irsa) | git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon-irsa | v0.0.21 |
 ## Resources
 
 | Name | Type |
@@ -130,12 +130,12 @@ See [basic example](examples/basic) for further information.
 | <a name="input_helm_wait_for_jobs"></a> [helm\_wait\_for\_jobs](#input\_helm\_wait\_for\_jobs) | If wait is enabled, will wait until all Helm Jobs have been completed before marking the release as successful. It will wait for as long as timeout. Defaults to `false`. | `bool` |
 | <a name="input_irsa_additional_policies"></a> [irsa\_additional\_policies](#input\_irsa\_additional\_policies) | Map of the additional policies to be attached to IRSA role. Where key is arbitrary id and value is policy ARN. Defaults to `{}`. | `map(string)` |
 | <a name="input_irsa_assume_role_arns"></a> [irsa\_assume\_role\_arns](#input\_irsa\_assume\_role\_arns) | List of ARNs assumable by the IRSA role. Applied only if `irsa_assume_role_enabled` is `true`. Defaults to `[]`. | `list(string)` |
-| <a name="input_irsa_assume_role_enabled"></a> [irsa\_assume\_role\_enabled](#input\_irsa\_assume\_role\_enabled) | Whether IRSA is allowed to assume role defined by `irsa_assume_role_arn`. Mutually exclusive with `irsa_policy_enabled`. Defaults to `false`. | `bool` |
+| <a name="input_irsa_assume_role_enabled"></a> [irsa\_assume\_role\_enabled](#input\_irsa\_assume\_role\_enabled) | Whether IRSA is allowed to assume role defined by `irsa_assume_role_arn`. Defaults to `false`. | `bool` |
 | <a name="input_irsa_assume_role_policy_condition_test"></a> [irsa\_assume\_role\_policy\_condition\_test](#input\_irsa\_assume\_role\_policy\_condition\_test) | Specifies the condition test to use for the assume role trust policy. Defaults to `StringEquals`. | `string` |
 | <a name="input_irsa_assume_role_policy_condition_values"></a> [irsa\_assume\_role\_policy\_condition\_values](#input\_irsa\_assume\_role\_policy\_condition\_values) | Specifies the values for the assume role trust policy condition. Each entry in this list must follow the required format `system:serviceaccount:$service_account_namespace:$service_account_name`. If this variable is left as the default, `local.irsa_assume_role_policy_condition_values_default` is used instead, which is a list containing a single value. Note that if this list is defined, the `service_account_name` and `service_account_namespace` variables are ignored. Defaults to `[]`. | `list(string)` |
 | <a name="input_irsa_permissions_boundary"></a> [irsa\_permissions\_boundary](#input\_irsa\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the IRSA role. Defaults to `null`. | `string` |
 | <a name="input_irsa_policy"></a> [irsa\_policy](#input\_irsa\_policy) | AWS IAM policy JSON document to be attached to the IRSA role. Applied only if `irsa_policy_enabled` is `true`. Defaults to `""`. | `string` |
-| <a name="input_irsa_policy_enabled"></a> [irsa\_policy\_enabled](#input\_irsa\_policy\_enabled) | Whether to create IAM policy specified by `irsa_policy`. Mutually exclusive with `irsa_assume_role_enabled`. Defaults to `false`. | `bool` |
+| <a name="input_irsa_policy_enabled"></a> [irsa\_policy\_enabled](#input\_irsa\_policy\_enabled) | Whether to create IAM policy specified by `irsa_policy`. Defaults to `false`. | `bool` |
 | <a name="input_irsa_role_create"></a> [irsa\_role\_create](#input\_irsa\_role\_create) | Whether to create IRSA role and annotate Service Account. Defaults to `true`. | `bool` |
 | <a name="input_irsa_role_name"></a> [irsa\_role\_name](#input\_irsa\_role\_name) | IRSA role name. The value is prefixed by `irsa_role_name_prefix`. Either `irsa_role_name` or `irsa_role_name_prefix` must be set. Defaults to `""`. | `string` |
 | <a name="input_irsa_role_name_prefix"></a> [irsa\_role\_name\_prefix](#input\_irsa\_role\_name\_prefix) | IRSA role name prefix. Either `irsa_role_name_prefix` or `irsa_role_name` must be set. Defaults to `""`. | `string` |
@@ -147,6 +147,7 @@ See [basic example](examples/basic) for further information.
 | <a name="input_metric_server_irsa_policy"></a> [metric\_server\_irsa\_policy](#input\_metric\_server\_irsa\_policy) | Policy to be attached to the default role of the KEDA metrics server. Applied only if `metric_server_irsa_policy_enabled` is `true`. | `string` |
 | <a name="input_metric_server_irsa_policy_enabled"></a> [metric\_server\_irsa\_policy\_enabled](#input\_metric\_server\_irsa\_policy\_enabled) | Whether to create IAM policy specified by `metric_server_irsa_policy` for the KEDA metrics server. Mutually exclusive with `metric_server_irsa_assume_role_enabled`. | `bool` |
 | <a name="input_metric_server_irsa_role_create"></a> [metric\_server\_irsa\_role\_create](#input\_metric\_server\_irsa\_role\_create) | Whether to create the IRSA role for the KEDA metrics server. | `bool` |
+| <a name="input_metric_server_irsa_role_name"></a> [metric\_server\_irsa\_role\_name](#input\_metric\_server\_irsa\_role\_name) | The name of the IRSA role for the KEDA metrics server. | `string` |
 | <a name="input_metric_server_service_account_create"></a> [metric\_server\_service\_account\_create](#input\_metric\_server\_service\_account\_create) | Whether to create the Service Account for the KEDA metrics server. | `bool` |
 | <a name="input_metric_server_service_account_name"></a> [metric\_server\_service\_account\_name](#input\_metric\_server\_service\_account\_name) | The name of the Service Account for the KEDA metrics server. | `string` |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | The Kubernetes Namespace in which the Helm chart will be installed (required). | `string` |
@@ -157,6 +158,7 @@ See [basic example](examples/basic) for further information.
 | <a name="input_operator_irsa_policy"></a> [operator\_irsa\_policy](#input\_operator\_irsa\_policy) | Policy to be attached to the default role of the KEDA operator. Applied only if `operator_irsa_policy_enabled` is `true`. | `string` |
 | <a name="input_operator_irsa_policy_enabled"></a> [operator\_irsa\_policy\_enabled](#input\_operator\_irsa\_policy\_enabled) | Whether to create IAM policy specified by `operator_irsa_policy` for the KEDA operator. Mutually exclusive with `operator_irsa_assume_role_enabled`. | `bool` |
 | <a name="input_operator_irsa_role_create"></a> [operator\_irsa\_role\_create](#input\_operator\_irsa\_role\_create) | Whether to create the IRSA role for the KEDA operator. | `bool` |
+| <a name="input_operator_irsa_role_name"></a> [operator\_irsa\_role\_name](#input\_operator\_irsa\_role\_name) | The name of the IRSA role for the KEDA operator. | `string` |
 | <a name="input_operator_service_account_create"></a> [operator\_service\_account\_create](#input\_operator\_service\_account\_create) | Whether to create the Service Account for the KEDA operator. | `bool` |
 | <a name="input_operator_service_account_name"></a> [operator\_service\_account\_name](#input\_operator\_service\_account\_name) | The name of the Service Account for the KEDA operator. | `string` |
 | <a name="input_pod_identity_additional_policies"></a> [pod\_identity\_additional\_policies](#input\_pod\_identity\_additional\_policies) | Map of the additional policies to be attached to pod identity role. Where key is arbitrary id and value is policy ARN. Defaults to `{}`. | `map(string)` |
@@ -180,6 +182,7 @@ See [basic example](examples/basic) for further information.
 | <a name="input_webhooks_irsa_policy"></a> [webhooks\_irsa\_policy](#input\_webhooks\_irsa\_policy) | Policy to be attached to the default role of the KEDA webhooks. Applied only if `webhooks_irsa_policy_enabled` is `true`. | `string` |
 | <a name="input_webhooks_irsa_policy_enabled"></a> [webhooks\_irsa\_policy\_enabled](#input\_webhooks\_irsa\_policy\_enabled) | Whether to create IAM policy specified by `webhooks_irsa_policy` for the KEDA operator. Mutually exclusive with `webhooks_irsa_assume_role_enabled`. | `bool` |
 | <a name="input_webhooks_irsa_role_create"></a> [webhooks\_irsa\_role\_create](#input\_webhooks\_irsa\_role\_create) | Whether to create the IRSA role for the KEDA webhooks. | `bool` |
+| <a name="input_webhooks_irsa_role_name"></a> [webhooks\_irsa\_role\_name](#input\_webhooks\_irsa\_role\_name) | The name of the IRSA role for the KEDA webhooks. | `string` |
 | <a name="input_webhooks_service_account_create"></a> [webhooks\_service\_account\_create](#input\_webhooks\_service\_account\_create) | Whether to create the Service Account for the KEDA webhooks. | `bool` |
 | <a name="input_webhooks_service_account_name"></a> [webhooks\_service\_account\_name](#input\_webhooks\_service\_account\_name) | The name of the Service Account for the KEDA webhooks. | `string` |
 ## Outputs
@@ -187,7 +190,7 @@ See [basic example](examples/basic) for further information.
 | Name | Description |
 |------|-------------|
 | <a name="output_addon"></a> [addon](#output\_addon) | The addon module outputs |
-| <a name="output_addon_irsa"></a> [addon\_irsa](#output\_addon\_irsa) | The addon IRSA module outputs |
+| <a name="output_addon_irsa"></a> [addon\_irsa](#output\_addon\_irsa) | The IRSA addon module outputs |
 ## Contributing and reporting issues
 
 Feel free to create an issue in this repository if you have questions, suggestions or feature requests.
