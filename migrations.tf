@@ -33,3 +33,8 @@ moved {
   from = kubernetes_service_account.helm_argo_application_wait
   to   = module.addon.kubernetes_service_account.helm_argo_application_wait
 }
+
+moved {
+  from = module.addon-irsa["metricServer"]
+  to   = module.addon-irsa["metric-server"]
+}

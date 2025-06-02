@@ -29,7 +29,7 @@ locals {
       irsa_permissions_boundary = var.operator_irsa_permissions_boundary
       irsa_additional_policies  = var.operator_irsa_additional_policies
     }
-    metricServer = {
+    metric-server = {
       service_account_create = var.metric_server_service_account_create
       service_account_name   = var.metric_server_service_account_name
 
@@ -70,10 +70,10 @@ locals {
         } : tomap({})
       }
       metricServer = {
-        create = module.addon-irsa["metricServer"].service_account_create
-        name   = module.addon-irsa["metricServer"].service_account_name
-        annotations = module.addon-irsa["metricServer"].irsa_role_enabled ? {
-          "eks.amazonaws.com/role-arn" = module.addon-irsa["metricServer"].iam_role_attributes.arn
+        create = module.addon-irsa["metric-server"].service_account_create
+        name   = module.addon-irsa["metric-server"].service_account_name
+        annotations = module.addon-irsa["metric-server"].irsa_role_enabled ? {
+          "eks.amazonaws.com/role-arn" = module.addon-irsa["metric-server"].iam_role_attributes.arn
         } : tomap({})
       }
       webhooks = {
