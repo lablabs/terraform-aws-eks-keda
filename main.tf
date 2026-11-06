@@ -11,7 +11,7 @@ locals {
     name = "keda-controller"
 
     helm_chart_name    = "keda"
-    helm_chart_version = "2.14.2"
+    helm_chart_version = "2.21.0" # 2.21.0
     helm_repo_url      = "https://kedacore.github.io/charts"
   }
 
